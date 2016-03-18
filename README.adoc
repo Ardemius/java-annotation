@@ -1,0 +1,3 @@
+= java-annotation
+
+A training about Java annotations.
