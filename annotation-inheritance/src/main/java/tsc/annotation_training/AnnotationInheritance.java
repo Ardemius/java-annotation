@@ -10,33 +10,47 @@ import java.lang.reflect.Method;
 public class AnnotationInheritance {
 
    public static void main(String[] args) {
-      TestSubclass test = new TestSubclass();
 
-      for (Annotation annotation : test.getClass().getAnnotations()) {
-         System.out.println("Class getAnnotations: " + annotation);
+      TestInterface test = new TestSubclass();
+      testAnnotationInheritance(test.getClass());
+
+      testAnnotationInheritance(TestSubclass.class);
+      testAnnotationInheritance(TestSuperclass.class);
+      testAnnotationInheritance(TestInterface.class);
+   }
+
+   private static void testAnnotationInheritance(Class<?> clazz) {
+
+      System.out.println("Class under test = " + clazz);
+
+      // Class level
+      for (Annotation annotation : clazz.getAnnotations()) {
+         System.out.println("    - Class getAnnotations: " + annotation);
       }
 
-      for (Annotation annotation : test.getClass().getDeclaredAnnotations()) {
-         System.out.println("Class getDeclaredAnnotations: " + annotation);
+      for (Annotation annotation : clazz.getDeclaredAnnotations()) {
+         System.out.println("    - Class getDeclaredAnnotations: " + annotation);
       }
 
-      for (Field field : test.getClass().getFields()) {
-         for (Annotation annotation : field.getAnnotations()) {
-            System.out.println("Field getAnnotations: " + annotation);
-         }
-
-         for (Annotation annotation : field.getDeclaredAnnotations()) {
-            System.out.println("Field getDeclaredAnnotations: " + annotation);
-         }
-      }
-
-      for (Method method : test.getClass().getMethods()) {
+      // Method level
+      for (Method method : clazz.getMethods()) {
          for (Annotation annotation : method.getAnnotations()) {
-            System.out.println("Method getAnnotations: " + annotation);
+            System.out.println("    - Method getAnnotations: " + annotation);
          }
 
          for (Annotation annotation : method.getDeclaredAnnotations()) {
-            System.out.println("Method getDeclaredAnnotations: " + annotation);
+            System.out.println("    - Method getDeclaredAnnotations: " + annotation);
+         }
+      }
+
+      // Field level
+      for (Field field : clazz.getFields()) {
+         for (Annotation annotation : field.getAnnotations()) {
+            System.out.println("    - Field getAnnotations: " + annotation);
+         }
+
+         for (Annotation annotation : field.getDeclaredAnnotations()) {
+            System.out.println("    - Field getDeclaredAnnotations: " + annotation);
          }
       }
    }
