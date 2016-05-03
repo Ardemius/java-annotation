@@ -17,6 +17,7 @@ public class AnnotationInheritance {
       testAnnotationInheritance(TestSubclass.class);
       testAnnotationInheritance(TestSuperclass.class);
       testAnnotationInheritance(TestInterface.class);
+      testAnnotationInheritance(TestSubInterface.class);
    }
 
    private static void testAnnotationInheritance(Class<?> clazz) {
@@ -66,6 +67,8 @@ interface TestInterface {
    @CustomAnnotation("Method")
    void testMethod();
 }
+
+interface TestSubInterface extends TestInterface {}
 
 @CustomAnnotation("Class")
 class TestSuperclass {
