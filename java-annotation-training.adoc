@@ -24,7 +24,7 @@ They are generally used for the following purposes:
 
 == Annotation basics
 
-* Shortest form, with no element: 
+* *Shortest form*, with no element: 
 +
 [source,java]
 ----
@@ -32,23 +32,221 @@ They are generally used for the following purposes:
 ----
 +
 The `@` character indicates to the compiler that it is an annotation, after that comes the annotation name.
-* With elements:
+* *With elements*:
 +
 [source,java]
 ----
 @Entity(tableName = "vehicles", primaryKey = "id")
 ----
 +
-`tableName` and `primaryKey` are the names of the 2 elements, whose values are respectively set to `vehicules` and `id`.
+`tableName` and `primaryKey` are the names of the 2 elements, whose values are respectively set to `vehicules` and `id`. +
+If there is just *one element* named `value` (the common convention in that case), then the *name can be omitted*:
++
+[source,java]
+----
+@SuppressWarnings("unchecked")
+----
 
-* titi
+== Where annotations can be used
+
+Annotations can be placed above *declarations*:
+
+* declarations of classes,
+* methods,
+* methods parameters,
+* fields,
+* and local variables
+
+Here is an example (with non really existing annotations):
+
+[source,java]
+----
+@Entity
+public class Vehicle {
+
+    @Persistent
+    protected String vehicleName = null;
 
 
-== Inheritance
+    @Getter
+    public String getVehicleName() {
+        return this.vehicleName;
+    }
+
+    public void setVehicleName(@Optional vehicleName) {
+        this.vehicleName = vehicleName;
+    }
+
+    public List addVehicleNameToList(List names) {
+
+        @Optional
+        List localNames = names;
+
+        if(localNames == null) {
+            localNames = new ArrayList();
+        }
+        localNames.add(getVehicleName());
+
+        return localNames;
+    }
+
+}
+----
+
+=== Type annotations
+
+[NOTE]
+====
+Java 8 introduced the possibility to apply annotations to the *use* of types, which is called *type annotation*.
+====
+
+Here are some examples:
+
+* Class instance creation expression:
++
+[source,java]
+----
+new @Interned MyObject();
+----
+* Type cast:
++
+[source,java]
+----
+myString = (@NonNull String) str;
+----
+* `implements` clause:
++
+[source,java]
+----
+class UnmodifiableList<T> implements @Readonly List<@Readonly T> { ... }
+----
+* Thrown exception declaration:
++
+[source,java]
+----
+void monitorTemperature() throws @Critical TemperatureException { ... } 
+----
+
+Type annotations were created to support improved analysis of Java programs, so as to *ensure stronger type checking*. +
+For example, you want to ensure that a particular variable in your program is never assigned to null, and you write a custom plugin handling your custom `@NonNull` annotation.
+
+Several third parties already wrote this kind of *type checking modules*, like the http://types.cs.washington.edu/checker-framework/[Checker Framework].
+
+== Built-in Java annotations
+
+Several built-in annotations exist:
+
+* `@Deprecated`: indicates that the marked element is deprecated and should no longer be used. +
+Do not mistake it with the `@deprecated` Javadoc symbol.
++
+[source,java]
+----
+@Deprecated
+/**
+  @deprecated Use MyNewComponent instead.
+*/
+public class MyComponent {
+
+}
+----
+* `@Override`: informs the compiler that the element is meant to override an element declared in a superclass
+* `@SuppressWarnings`: tells the compiler to suppress specific warnings that it would otherwise generate
+* `@SafeVarargs`: when applied to a method or constructor, asserts that the code does not perform potentially unsafe operations on its varargs parameter. +
+When this annotation type is used, unchecked warnings relating to varargs usage are suppressed.
+
+Besides those last "classic" built-in annotations, also exist *meta-annotations*, which *apply to other annotations*:
+
+* `@Retention`
+* `@Documented`
+* `@Target`
+* `@Inherited`
+* `@Repeatable`
+
+Those annotations are explained below.
+
+== Creating your own annotations
+
+Creating a custom annotation means defining an *annotation type*. +
+Here is the syntax to do so:
+[source,java]
+----
+@interface ClassPreamble {
+   String author();
+   String date();
+   int currentRevision() default 1;
+   String lastModified() default "N/A";
+   String lastModifiedBy() default "N/A";
+   // Note use of array
+   String[] reviewers();
+}
+----
+
+An annotation type is defined in its *own file*, just like a Java class or interface. +
+You define it using the `@interface` keyword.
+
+The data types of its elements can be:
+
+* primitives,
+* arrays,
+* but *NOT* complex objects
+
+Once defined, you can use annotations of this type the following way:
+[source,java]
+----
+@ClassPreamble (
+   author = "John Doe",
+   date = "3/17/2002",
+   currentRevision = 6,
+   lastModified = "4/12/2004",
+   lastModifiedBy = "Jane Doe",
+   // Note array notation
+   reviewers = {"Alice", "Bob", "Cindy"}
+)
+public class Generation3List extends Generation2List {
+
+// class code goes here
+
+}
+----
+
+=== Element default values
+
+Element *default values* can be specified using the keyword `default`, which makes the *element become optional*.
+
+[source,java]
+----
+@interface ClassPreamble {
+   String author();
+   String date();
+   int currentRevision() default 1;
+   ...
+----
+
+Without a default value, you *must* explicitly specify a value for all the elements of the annotation.
+
+=== @Retention
+
+`@Retention` annotation specifies how the marked annotation is stored:
+
+* `RetentionPolicy.SOURCE`: 
+* `RetentionPolicy.CLASS`:
+* `RetentionPolicy.RUNTIME`: 
+
+=== @Target
+
+=== @Inherited
+
+=== @Documented
+
+=== @Repeatable
+
+== Annotations tricks and tips
+
+=== Inheritance confusion
 
 There is *NO* inheritance for annotations, except for classes, using the `@Inherited` meta-annotation.
 
-== Differences between `getAnnotations` and `getDeclaredAnnotations` for `Class`, `Method` and `Field`
+=== Differences between `getAnnotations` and `getDeclaredAnnotations` for `Class`, `Method` and `Field`
 
 The "hack" is that there is *NO difference for those methods for `Method` and `Field`*.
 
@@ -73,17 +271,15 @@ In this case, as explained in the Javadoc, you have:
 
 To illustrate those differences, have a look at the AnnotationInheritance in my GitHub repo.
 
-== Good to know
+=== Retrieving the name of a parameter through an annotation
 
 * not (easily) possible to get the name of a parameter through an annotation (CHECK if this have to be here or in the reflection training)
-
-== Going deeper: Java annotations preprocessor
 
 == Resources
 
 * http://www.mkyong.com/java/java-custom-annotations-example/
-* https://docs.oracle.com/javase/tutorial/java/annotations/basics.html
-* http://tutorials.jenkov.com/java/annotations.html#creating-your-own-annotations
+* https://docs.oracle.com/javase/tutorial/java/annotations/index.html
+* http://tutorials.jenkov.com/java/annotations.html
 * https://docs.oracle.com/javase/8/docs/api/index.html
 * http://stackoverflow.com/questions/18512304/difference-between-fieldgetannotations-and-fieldgetdeclaredannotations
 
