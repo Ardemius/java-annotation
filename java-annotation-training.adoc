@@ -4,10 +4,45 @@
 :toc-placement: preamble
 :lb: pass:[<br> +]
 :imagesdir: ./images
+:icons: font
+:source-highlighter: highlightjs
 
 By Thomas SCHWENDER (Softeam StarTech Java)
 
 == Overview
+
+Java annotations were introduced in Java 5.
+
+They are used to provide *metadata* on your Java code. +
+As a consequence, they have *no direct effect on the operation of the code they annotate*.
+
+They are generally used for the following purposes:
+
+* *Information for the compiler*: Annotations can be used by the compiler to detect errors or suppress warnings.
+* *Compile-time and deployment-time (meaning build-time) processing*: Software tools (like Maven) can process annotation information to generate code, XML files, and so forth.
+* *Runtime processing*: Some annotations are available to be examined at runtime, usually through *Java Reflection*.
+
+== Annotation basics
+
+* Shortest form, with no element: 
++
+[source,java]
+----
+@Entity
+----
++
+The `@` character indicates to the compiler that it is an annotation, after that comes the annotation name.
+* With elements:
++
+[source,java]
+----
+@Entity(tableName = "vehicles", primaryKey = "id")
+----
++
+`tableName` and `primaryKey` are the names of the 2 elements, whose values are respectively set to `vehicules` and `id`.
+
+* titi
+
 
 == Inheritance
 
@@ -41,6 +76,8 @@ To illustrate those differences, have a look at the AnnotationInheritance in my 
 == Good to know
 
 * not (easily) possible to get the name of a parameter through an annotation (CHECK if this have to be here or in the reflection training)
+
+== Going deeper: Java annotations preprocessor
 
 == Resources
 
