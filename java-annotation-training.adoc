@@ -397,7 +397,10 @@ To illustrate those differences, have a look at the `AnnotationInheritance` in m
 
 === Retrieving the name of a parameter through an annotation
 
-In fact, it is *not* (easily) possible to get the name of a parameter through an annotation... 
+In fact, it is *not* (easily) possible to get the name of a parameter through an annotation.
+
+The only way to do so is to told the compiler to include them, by *compiling with debug information* (the `-g` option of `javac`).
+
 
 == Resources
 
